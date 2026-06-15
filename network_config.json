@@ -1,0 +1,464 @@
+{
+  "cells": [
+    {
+      "cell_id": "C1",
+      "cell_type": "micro",
+      "macro_id": "M3",
+      "latitude": 51.5266,
+      "longitude": -0.1338,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C2",
+      "cell_type": "micro",
+      "macro_id": "M1",
+      "latitude": 51.5248,
+      "longitude": -0.1359,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C3",
+      "cell_type": "micro",
+      "macro_id": "M6",
+      "latitude": 51.525,
+      "longitude": -0.1275,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C4",
+      "cell_type": "micro",
+      "macro_id": "M3",
+      "latitude": 51.526,
+      "longitude": -0.1345,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C5",
+      "cell_type": "micro",
+      "macro_id": "M4",
+      "latitude": 51.5255,
+      "longitude": -0.1327,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C6",
+      "cell_type": "micro",
+      "macro_id": "M2",
+      "latitude": 51.5228,
+      "longitude": -0.1322,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C7",
+      "cell_type": "micro",
+      "macro_id": "M4",
+      "latitude": 51.525,
+      "longitude": -0.1312,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "M5",
+      "cell_type": "macro",
+      "macro_id": "M5",
+      "latitude": 51.5263,
+      "longitude": -0.1285,
+      "p_max_watts": 40.0,
+      "p_static_watts": 10.0,
+      "cso_candidate": false
+    },
+    {
+      "cell_id": "C9",
+      "cell_type": "micro",
+      "macro_id": "M5",
+      "latitude": 51.526,
+      "longitude": -0.1276,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C10",
+      "cell_type": "micro",
+      "macro_id": "M3",
+      "latitude": 51.5262,
+      "longitude": -0.1337,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C11",
+      "cell_type": "micro",
+      "macro_id": "M2",
+      "latitude": 51.5225,
+      "longitude": -0.1328,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C12",
+      "cell_type": "micro",
+      "macro_id": "M6",
+      "latitude": 51.5253,
+      "longitude": -0.128,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "M1",
+      "cell_type": "macro",
+      "macro_id": "M1",
+      "latitude": 51.5245,
+      "longitude": -0.1345,
+      "p_max_watts": 40.0,
+      "p_static_watts": 10.0,
+      "cso_candidate": false
+    },
+    {
+      "cell_id": "C14",
+      "cell_type": "micro",
+      "macro_id": "M4",
+      "latitude": 51.5251,
+      "longitude": -0.1317,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C15",
+      "cell_type": "micro",
+      "macro_id": "M6",
+      "latitude": 51.5251,
+      "longitude": -0.1287,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C16",
+      "cell_type": "micro",
+      "macro_id": "M6",
+      "latitude": 51.5242,
+      "longitude": -0.1289,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C17",
+      "cell_type": "micro",
+      "macro_id": "M7",
+      "latitude": 51.5227,
+      "longitude": -0.127,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C18",
+      "cell_type": "micro",
+      "macro_id": "M1",
+      "latitude": 51.5247,
+      "longitude": -0.135,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "M4",
+      "cell_type": "macro",
+      "macro_id": "M4",
+      "latitude": 51.5255,
+      "longitude": -0.132,
+      "p_max_watts": 40.0,
+      "p_static_watts": 10.0,
+      "cso_candidate": false
+    },
+    {
+      "cell_id": "C20",
+      "cell_type": "micro",
+      "macro_id": "M7",
+      "latitude": 51.5237,
+      "longitude": -0.1278,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C21",
+      "cell_type": "micro",
+      "macro_id": "M5",
+      "latitude": 51.5266,
+      "longitude": -0.1294,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C22",
+      "cell_type": "micro",
+      "macro_id": "M6",
+      "latitude": 51.5246,
+      "longitude": -0.1275,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C23",
+      "cell_type": "micro",
+      "macro_id": "M7",
+      "latitude": 51.5244,
+      "longitude": -0.1271,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C24",
+      "cell_type": "micro",
+      "macro_id": "M5",
+      "latitude": 51.5262,
+      "longitude": -0.1304,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C25",
+      "cell_type": "micro",
+      "macro_id": "M7",
+      "latitude": 51.523,
+      "longitude": -0.1268,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C26",
+      "cell_type": "micro",
+      "macro_id": "M3",
+      "latitude": 51.5265,
+      "longitude": -0.1333,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C27",
+      "cell_type": "micro",
+      "macro_id": "M6",
+      "latitude": 51.5247,
+      "longitude": -0.1284,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C28",
+      "cell_type": "micro",
+      "macro_id": "M6",
+      "latitude": 51.5257,
+      "longitude": -0.1262,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C29",
+      "cell_type": "micro",
+      "macro_id": "M4",
+      "latitude": 51.5261,
+      "longitude": -0.1324,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C30",
+      "cell_type": "micro",
+      "macro_id": "M5",
+      "latitude": 51.5263,
+      "longitude": -0.1264,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C31",
+      "cell_type": "micro",
+      "macro_id": "M4",
+      "latitude": 51.525,
+      "longitude": -0.1316,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C32",
+      "cell_type": "micro",
+      "macro_id": "M5",
+      "latitude": 51.526,
+      "longitude": -0.1292,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "M6",
+      "cell_type": "macro",
+      "macro_id": "M6",
+      "latitude": 51.5249,
+      "longitude": -0.1283,
+      "p_max_watts": 40.0,
+      "p_static_watts": 10.0,
+      "cso_candidate": false
+    },
+    {
+      "cell_id": "C34",
+      "cell_type": "micro",
+      "macro_id": "M7",
+      "latitude": 51.5241,
+      "longitude": -0.1269,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C35",
+      "cell_type": "micro",
+      "macro_id": "M7",
+      "latitude": 51.5232,
+      "longitude": -0.1262,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "M3",
+      "cell_type": "macro",
+      "macro_id": "M3",
+      "latitude": 51.5263,
+      "longitude": -0.1336,
+      "p_max_watts": 40.0,
+      "p_static_watts": 10.0,
+      "cso_candidate": false
+    },
+    {
+      "cell_id": "C37",
+      "cell_type": "micro",
+      "macro_id": "M3",
+      "latitude": 51.5266,
+      "longitude": -0.1328,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C38",
+      "cell_type": "micro",
+      "macro_id": "M1",
+      "latitude": 51.5249,
+      "longitude": -0.1355,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C39",
+      "cell_type": "micro",
+      "macro_id": "M1",
+      "latitude": 51.5239,
+      "longitude": -0.1341,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C40",
+      "cell_type": "micro",
+      "macro_id": "M2",
+      "latitude": 51.5228,
+      "longitude": -0.1329,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C41",
+      "cell_type": "micro",
+      "macro_id": "M2",
+      "latitude": 51.5233,
+      "longitude": -0.1307,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C42",
+      "cell_type": "micro",
+      "macro_id": "M1",
+      "latitude": 51.524,
+      "longitude": -0.1343,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "C43",
+      "cell_type": "micro",
+      "macro_id": "M2",
+      "latitude": 51.5235,
+      "longitude": -0.1312,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "M7",
+      "cell_type": "macro",
+      "macro_id": "M7",
+      "latitude": 51.5237,
+      "longitude": -0.1268,
+      "p_max_watts": 40.0,
+      "p_static_watts": 10.0,
+      "cso_candidate": false
+    },
+    {
+      "cell_id": "C45",
+      "cell_type": "micro",
+      "macro_id": "M6",
+      "latitude": 51.5246,
+      "longitude": -0.1277,
+      "p_max_watts": 6.4,
+      "p_static_watts": 2.0,
+      "cso_candidate": true
+    },
+    {
+      "cell_id": "M2",
+      "cell_type": "macro",
+      "macro_id": "M2",
+      "latitude": 51.523,
+      "longitude": -0.1318,
+      "p_max_watts": 40.0,
+      "p_static_watts": 10.0,
+      "cso_candidate": false
+    }
+  ]
+}
