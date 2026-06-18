@@ -48,13 +48,14 @@ def run_episode(env: RANEnv, policy_fn, policy_name: str) -> pd.DataFrame:
     Returns:
         DataFrame with one row per timestep
     """
-    obs  = env.reset()
+    obs, _ = env.reset()
     done = False
     log  = []
 
     while not done:
         action          = policy_fn(obs, env)
-        obs, reward, done, info = env.step(action)
+        obs, reward, terminated, truncated, info = env.step(action)
+        done = terminated or truncated
         info["policy"]  = policy_name
         info["action"]  = action.tolist()
         log.append(info)
@@ -78,6 +79,7 @@ def print_summary(df: pd.DataFrame, policy_name: str, split: str):
     print(f"  Total reward (W·steps) : {df['reward_W'].sum():.2f}")
     print(f"  Mean  reward (W)       : {df['reward_W'].mean():.4f}")
     print(f"  Mean  cells off        : {df['n_cells_off'].mean():.2f} / 39")
+    print(f"  Mean  blocked (cap)    : {df['n_blocked_by_capacity'].mean():.2f}")
     print(f"  Mean  actual power (W) : {df['actual_power_W'].mean():.4f}")
     print(f"  Mean  baseline (W)     : {df['baseline_power_W'].mean():.4f}")
     print(f"{'='*50}\n")
@@ -137,8 +139,8 @@ def main():
 
     # Build env 
     env = RANEnv(
-        prb_csv="prb.csv",
-        mr_csv="mr.csv",
+        prb_csv="Datasets/Base/processed_cell_PRB.csv",
+        mr_csv="Datasets/Base/processed_cell_MR.csv",
         start=start,
         end=end,
     )
