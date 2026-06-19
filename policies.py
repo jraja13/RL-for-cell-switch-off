@@ -109,27 +109,24 @@ def load_iql_policy(model_path: str = "models/iql_policy.pt"):
 
 # DQN (stub)
 def load_dqn_policy(model_path: str = "models/dqn_policy.zip"):
-    """
-    Loads a trained DQN policy from disk.
-    Returns a policy_fn compatible with run_episode().
-
-    To be implemented after DQN training with Stable Baselines3.
-    Model is expected to be saved via model.save() in SB3.
-
-    Args:
-        model_path : path to saved DQN model (.zip)
-
-    Returns:
-        policy_fn compatible with run_episode()
-    """
     try:
         from stable_baselines3 import DQN
 
         model = DQN.load(model_path)
+        N_FEATURES_PER_CELL = 7
 
         def dqn_policy(obs: np.ndarray, env) -> np.ndarray:
-            action, _ = model.predict(obs, deterministic=True)
-            return np.array(action, dtype=np.int32)
+            action = np.zeros(env.n_micro, dtype=np.int32)
+
+            for j, micro_idx in enumerate(env.micro_indices):
+                start_idx = micro_idx * N_FEATURES_PER_CELL
+                end_idx   = start_idx + N_FEATURES_PER_CELL
+                cell_obs  = obs[start_idx:end_idx].astype(np.float32).reshape(1, -1)
+
+                cell_action, _ = model.predict(cell_obs, deterministic=True)
+                action[j] = int(cell_action[0])
+
+            return action
 
         print(f"DQN policy loaded from {model_path}")
         return dqn_policy
