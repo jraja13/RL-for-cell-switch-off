@@ -19,15 +19,19 @@ Note on total_timesteps:
 import os
 from stable_baselines3 import DQN
 from stable_baselines3.common.monitor import Monitor
-
 from dqn_wrapper import CellWiseDQNEnv
-
+import torch
+import random
+import numpy as np
 
 # Config
 TRAIN_START      = 0
 TRAIN_END        = 663
-TOTAL_TIMESTEPS  = 200_000   # ~7-8 passes over the 25,857-step training data
+TOTAL_TIMESTEPS  = 400_000   # ~7-8 passes over the 25,857-step training data
 MODEL_SAVE_PATH  = "models/dqn_policy.zip"
+torch.manual_seed(42)
+np.random.seed(42)
+random.seed(42)
 
 
 def main():
@@ -61,6 +65,7 @@ def main():
         policy_kwargs=dict(net_arch=[64, 64]),
         verbose=1,
         tensorboard_log="logs/tensorboard/",
+        seed=42
     )
 
     # Train

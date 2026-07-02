@@ -243,7 +243,7 @@ class RANEnv(gym.Env):
         """
         prb = self.prb[self.t]   # (46,)
 
-        # ── Baseline: everything ON, all 46 cells ──────────────────
+        # Baseline: everything ON, all 46 cells
         baseline_power = sum(
             auer_power(prb[i], self.cell_types[i], is_on=True)
             for i in range(self.n_cells)
@@ -279,7 +279,7 @@ class RANEnv(gym.Env):
                 n_blocked += 1
                 continue
 
-            # ── Feasible — commit the switch-off ────────────────────
+            # Feasible — commit the switch-off
             final_action[j] = 0
             macro_running_extra[macro_idx] += transferred
 
@@ -294,7 +294,7 @@ class RANEnv(gym.Env):
 
             per_cell_rewards[j] = own_saving - macro_cost
 
-        # ── Actual power: apply final_action, compute true total ──────
+        # Actual power: apply final_action, compute true total
         actual_power = 0.0
         for i, cell_type in enumerate(self.cell_types):
             if cell_type == "macro":

@@ -13,7 +13,7 @@ Usage:
 Looks for these files in results/ (eval split):
     always_on_eval.csv
     threshold_eval.csv
-    iql_eval.csv        ← skipped if not found
+    cql_eval.csv        ← skipped if not found
     dqn_eval.csv        ← skipped if not found
 
 Output:
@@ -49,8 +49,8 @@ POLICIES = [
     },
     # RL policies added here later
     {
-        "file":    "iql_eval.csv",
-        "label":   "IQL (Offline RL)",
+        "file":    "cql_eval.csv",
+        "label":   "CQL (Offline RL)",
         "color":   "#3498db",
         "ls":      "-",
         "required": False,   # skipped if file not found
