@@ -14,6 +14,7 @@ Looks for these files in results/ (eval split):
     always_on_eval.csv
     threshold_eval.csv
     cql_eval.csv        ← skipped if not found
+    iql_eval.csv        ← skipped if not found
     dqn_eval.csv        ← skipped if not found
 
 Output:
@@ -25,7 +26,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-
 
 # Config
 RESULTS_DIR = "results"
@@ -50,7 +50,7 @@ POLICIES = [
     # RL policies added here later
     {
         "file":    "cql_eval.csv",
-        "label":   "CQL (Offline RL)",
+        "label":   "CQL",
         "color":   "#3498db",
         "ls":      "-",
         "required": False,   # skipped if file not found
@@ -60,6 +60,13 @@ POLICIES = [
         "label":   "DQN (Baseline RL)",
         "color":   "#f39c12",
         "ls":      "--",
+        "required": False,
+    },
+    {
+        "file":    "iql_eval.csv",
+        "label":   "IQL",
+        "color":   "#9b59b6",
+        "ls":      "-.",
         "required": False,
     },
 ]

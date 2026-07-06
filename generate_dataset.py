@@ -22,7 +22,7 @@ Output:
     dataset/offline_dataset_stats.json
 
 Usage:
-    python generate_CQN_dataset.py
+    python generate_dataset.py
 """
 
 import os
@@ -61,7 +61,8 @@ def rollout_policy(policy_fn, policy_name: str) -> dict:
             end_idx   = start_idx + N_FEATURES
 
             all_obs.append(obs[start_idx:end_idx].astype(np.float32))
-            all_actions.append(float(final_action[j]))
+            act_val = 1.0 if float(final_action[j]) == 1.0 else 0.0
+            all_actions.append(act_val)
             all_rewards.append(float(per_cell_rewards[j]))
             all_next_obs.append(next_obs[start_idx:end_idx].astype(np.float32))
             all_terminals.append(terminal_flag)

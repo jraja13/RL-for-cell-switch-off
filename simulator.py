@@ -103,9 +103,10 @@ class RANEnv(gym.Env):
         config_path: str = "network_config.json",
         start:     int = 0,
         end:       int = None,
+        is_continuous_proxy: bool = False,
     ):
         super().__init__()
-
+        self.is_continuous_proxy = is_continuous_proxy
         # Load traffic data
         prb_full = pd.read_csv(prb_csv).astype(np.float32)
         mr_full  = pd.read_csv(mr_csv).astype(np.float32)
@@ -178,7 +179,18 @@ class RANEnv(gym.Env):
         self.observation_space = spaces.Box(
             low=0.0, high=1.0, shape=(n_features,), dtype=np.float32
         )
-        self.action_space = spaces.MultiBinary(self.n_micro)
+
+        if self.is_continuous_proxy:
+            # For IQL: A continuous box matching the shape of your 39 micro-cells
+            self.action_space = spaces.Box(
+                low=-1.0, 
+                high=1.0, 
+                shape=(self.n_micro,), 
+                dtype=np.float32
+            )
+        else:
+            # For DQN, CQL, and random baseline execution
+            self.action_space = spaces.MultiBinary(self.n_micro)
 
         # Static is_macro feature
         self.is_macro_feat = np.array(
@@ -338,7 +350,11 @@ class RANEnv(gym.Env):
         assert len(action) == self.n_micro, \
             f"Action must be length {self.n_micro}, got {len(action)}"
 
-        result = self._process_timestep(action)
+        if self.is_continuous_proxy:
+            binary_action = np.where(action > 0.0, 0, 1).astype(np.int32)
+        else:
+            binary_action = action.astype(np.int32)
+        result = self._process_timestep(binary_action)
 
         final_action = result["final_action"]
         for j, micro_idx in enumerate(self.micro_indices):

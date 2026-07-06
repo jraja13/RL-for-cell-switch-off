@@ -21,6 +21,7 @@ Rule-based policies:
 RL policies:
     - load_cql_policy()
     - load_dqn_policy()
+    - load_iql_policy()
 """
 
 import numpy as np
@@ -221,6 +222,32 @@ def load_cql_policy(model_path: str = "models/cql_policy"):
 
     except Exception as e:
         raise RuntimeError(f"Could not load CQL policy: {e}")
+
+def load_iql_policy(model_path: str = "models/iql_policy"):
+    try:
+        import d3rlpy
+        policy = d3rlpy.load_learnable(model_path)
+        N_FEATURES_PER_CELL = 7
+
+        def iql_policy(obs: np.ndarray, env) -> np.ndarray:
+            # Must be float32 to hold continuous proxy values (-1.0 to 1.0)
+            action = np.zeros(env.n_micro, dtype=np.float32) 
+            
+            for j, micro_idx in enumerate(env.micro_indices):
+                start_idx = micro_idx * N_FEATURES_PER_CELL
+                end_idx   = start_idx + N_FEATURES_PER_CELL
+                cell_obs  = obs[start_idx:end_idx].astype(np.float32).reshape(1, -1)
+                
+                # Predict returns a 1D continuous array [value], extract the scalar float
+                cell_action = policy.predict(cell_obs).item()
+                action[j]   = cell_action 
+                
+            return action # Returns the 39-dim continuous float array to RANEnv
+
+        print(f"IQL policy loaded from {model_path}")
+        return iql_policy
+    except Exception as e:
+        raise RuntimeError(f"Could not load IQL policy: {e}")
 
 # DQN
 def load_dqn_policy(model_path: str = "models/dqn_policy.zip"):

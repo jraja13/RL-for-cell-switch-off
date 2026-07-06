@@ -6,6 +6,7 @@ Usage:
     python main.py --policy threshold
     python main.py --policy random
     python main.py --policy cql        (after training)
+    python main.py --policy iql        (after training)
     python main.py --policy dqn        (after training)
 
 Timestep split:
@@ -15,7 +16,7 @@ Timestep split:
 For rule-based policies (always_on, threshold, random):
     Runs on full 830 timesteps but only evaluation slice is used for comparison.
 
-For ML policies (cql, dqn):
+For ML policies (cql, iql, dqn):
     Training happens separately.
     This file runs evaluation on the held-out slice only.
 """
@@ -92,7 +93,7 @@ def main():
         "--policy",
         type=str,
         required=True,
-        choices=["always_on", "threshold", "random", "cql", "dqn"],
+        choices=["always_on", "threshold", "random", "cql", "iql", "dqn"],
         help="Policy to run"
     )
     parser.add_argument(
@@ -133,6 +134,10 @@ def main():
         from policies import load_cql_policy
         policy_fn = load_cql_policy()
 
+    elif args.policy == "iql":
+        from policies import load_iql_policy
+        policy_fn = load_iql_policy()
+
     elif args.policy == "dqn":
         from policies import load_dqn_policy
         policy_fn = load_dqn_policy()
@@ -143,6 +148,7 @@ def main():
         mr_csv="Datasets/Base/processed_cell_MR.csv",
         start=start,
         end=end,
+        is_continuous_proxy=(args.policy == "iql"),
     )
 
     # ── Run 
