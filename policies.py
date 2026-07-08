@@ -136,21 +136,33 @@ def get_all_behaviour_policies() -> list:
     policies = []
 
     # PRB-only 
-    for thresh in [round(x * 0.05, 2) for x in range(1, 11)]:
+    for thresh in [round(x * 0.05, 2) for x in range(1, 20)]:
         policies.append({
             "name": f"threshold_{thresh}",
             "fn":   make_threshold_policy(threshold=thresh),
         })
 
-    # Dual threshold (4 policies)
+    # Dual threshold 
     dual_configs = [
         (0.2, 0.2),   
         (0.3, 0.3),   
-        (0.4, 0.4),  
+        (0.4, 0.4),
+        (0.5, 0.5),
+        (0.6, 0.6),
+        (0.7, 0.7),  
         (0.2, 0.3),
         (0.2, 0.4),
         (0.3, 0.2),
-        (0.3, 0.4)
+        (0.3, 0.4),
+        (0.4, 0.2),
+        (0.4, 0.3),
+        (0.5, 0.3),
+        (0.5, 0.4),
+        (0.6, 0.4),
+        (0.6, 0.5),
+        (0.7, 0.5),
+        (0.7, 0.6),
+        (0.7, 0.6),
     ]
     for prb_t, mr_t in dual_configs:
         policies.append({
@@ -166,7 +178,19 @@ def get_all_behaviour_policies() -> list:
         (0.2, 0.9),   
         (0.3, 0.7),   
         (0.3, 0.8),  
-        (0.3, 0.9),   
+        (0.3, 0.9), 
+        (0.4, 0.7),   
+        (0.4, 0.8),  
+        (0.4, 0.9),
+        (0.5, 0.7),
+        (0.5, 0.8),
+        (0.5, 0.9),
+        (0.6, 0.7),
+        (0.6, 0.8),
+        (0.6, 0.9),
+        (0.7, 0.7),
+        (0.7, 0.8),
+        (0.7, 0.9),
     ]
     for prb_t, headroom in macro_configs:
         policies.append({
