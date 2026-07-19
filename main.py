@@ -106,7 +106,7 @@ def main():
     parser.add_argument(
         "--threshold",
         type=float,
-        default=0.1,
+        default=0.3,
         help="PRB threshold for threshold policy"
     )
     args = parser.parse_args()

@@ -61,7 +61,6 @@ import pandas as pd
 import gymnasium as gym
 from gymnasium import spaces
 
-
 # Auer et al power model 
 POWER_PARAMS = {
     "macro": {"n_trx": 6, "p_max": 20.0, "p0": 130.0, "delta_p": 4.7, "p_sleep": 75.0},
@@ -70,8 +69,10 @@ POWER_PARAMS = {
 
 # Sector counts 
 SECTOR_COUNT = {"macro": 3, "micro": 1}
-SECTOR_SCALE = SECTOR_COUNT["micro"] / SECTOR_COUNT["macro"]   # 1/3
+SECTOR_SCALE = SECTOR_COUNT["micro"] / SECTOR_COUNT["macro"] 
 
+MICRO_CSO_LIMIT    = 0.5  # max PRB load at which a micro is eligible for switch-off
+MACRO_CAPACITY_LIMIT = 0.8 # max PRB load at which a macro is eligible to accept transferred load
 
 def auer_power(load: float, cell_type: str, is_on: bool = True) -> float:
     """
@@ -264,7 +265,9 @@ class RANEnv(gym.Env):
         final_action     = requested_action.copy()
         per_cell_rewards = np.zeros(self.n_micro, dtype=np.float32)
         macro_running_extra = np.zeros(self.n_cells, dtype=np.float32)   # committed transfers so far
-        n_blocked = 0
+        n_blocked = 0   # blocked by macro capacity 
+        n_blocked_by_micro_threshold = 0  # blocked by MICRO_CSO_LIMIT
+
 
         for j, micro_idx in enumerate(self.micro_indices):
             macro_idx       = self.micro_to_macro_idx[j]
@@ -277,14 +280,18 @@ class RANEnv(gym.Env):
                 per_cell_rewards[j] = 0.0
                 continue
 
-            # Requested OFF — check feasibility against macro's CURRENT
-            # running load (base + already-committed transfers this step)
+            if micro_prb > MICRO_CSO_LIMIT:
+                final_action[j]     = 1
+                per_cell_rewards[j] = 0.0
+                n_blocked_by_micro_threshold += 1   
+                continue
+
             transferred = micro_prb * SECTOR_SCALE
             projected_load = (
                 macro_base_load + macro_running_extra[macro_idx] + transferred
             )
 
-            if projected_load > 1.0:
+            if projected_load > MACRO_CAPACITY_LIMIT:
                 # Not enough room on the macro — force this micro to stay ON
                 final_action[j]     = 1
                 per_cell_rewards[j] = 0.0
@@ -322,6 +329,7 @@ class RANEnv(gym.Env):
             "final_action":      final_action,
             "per_cell_rewards":  per_cell_rewards,
             "n_blocked":         n_blocked,
+            "n_blocked_by_micro_threshold": n_blocked_by_micro_threshold, 
             "baseline_power_W":  float(baseline_power),
             "actual_power_W":    float(actual_power),
         }
@@ -369,6 +377,7 @@ class RANEnv(gym.Env):
             "reward_W":          round(reward, 4),
             "n_cells_off":       int(np.sum(final_action == 0)),
             "n_blocked_by_capacity": result["n_blocked"],
+            "n_blocked_by_micro_threshold": result["n_blocked_by_micro_threshold"],
             "action":            final_action.tolist(),
             "per_cell_rewards":  result["per_cell_rewards"].tolist(),
         }

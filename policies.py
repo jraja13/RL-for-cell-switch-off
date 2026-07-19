@@ -39,7 +39,7 @@ def random_policy(obs: np.ndarray, env) -> np.ndarray:
 
 
 #  PRB-only threshold
-def make_threshold_policy(threshold: float = 0.3):
+def make_threshold_policy(threshold: float = 0.1):
     """
     Switch off micro if PRB load < threshold.
     Threshold in [0, 1].
@@ -121,49 +121,27 @@ def make_distance_policy(prb_threshold: float, max_distance: float):
     distance_policy.__name__ = f"distance_prb{prb_threshold}_dist{max_distance}"
     return distance_policy
 
-# Behaviour policy registry (20 policies) 
+# Behaviour policy registry 
 def get_all_behaviour_policies() -> list:
-    """
-    Returns all behaviour policies for offline dataset generation.
-
-    Categories:
-        PRB-only threshold (0.05 to 0.50, step 0.05)
-        Dual threshold (PRB + MR conditions)
-        Macro-aware  (PRB + macro headroom)
-        Distance-weighted  (PRB + distance to macro)
-
-    """
     policies = []
 
-    # PRB-only 
-    for thresh in [round(x * 0.05, 2) for x in range(1, 20)]:
+    # PRB-only — 10 policies (0.05 to 0.50, step 0.05)
+    for thresh in [round(x * 0.05, 2) for x in range(1, 11)]:
         policies.append({
             "name": f"threshold_{thresh}",
             "fn":   make_threshold_policy(threshold=thresh),
         })
 
-    # Dual threshold 
+    
+    from itertools import product
+
+    thresh_values = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7]
     dual_configs = [
-        (0.2, 0.2),   
-        (0.3, 0.3),   
-        (0.4, 0.4),
-        (0.5, 0.5),
-        (0.6, 0.6),
-        (0.7, 0.7),  
-        (0.2, 0.3),
-        (0.2, 0.4),
-        (0.3, 0.2),
-        (0.3, 0.4),
-        (0.4, 0.2),
-        (0.4, 0.3),
-        (0.5, 0.3),
-        (0.5, 0.4),
-        (0.6, 0.4),
-        (0.6, 0.5),
-        (0.7, 0.5),
-        (0.7, 0.6),
-        (0.7, 0.6),
+        (prb_t, mr_t)
+        for prb_t, mr_t in product(thresh_values, repeat=2)
+        if abs(prb_t - mr_t) <= 0.2
     ]
+
     for prb_t, mr_t in dual_configs:
         policies.append({
             "name": f"dual_prb{prb_t}_mr{mr_t}",
@@ -171,49 +149,25 @@ def get_all_behaviour_policies() -> list:
                         prb_threshold=prb_t, mr_threshold=mr_t),
         })
 
-    # Macro-aware 
-    macro_configs = [
-        (0.2, 0.7),
-        (0.2, 0.8),   
-        (0.2, 0.9),   
-        (0.3, 0.7),   
-        (0.3, 0.8),  
-        (0.3, 0.9), 
-        (0.4, 0.7),   
-        (0.4, 0.8),  
-        (0.4, 0.9),
-        (0.5, 0.7),
-        (0.5, 0.8),
-        (0.5, 0.9),
-        (0.6, 0.7),
-        (0.6, 0.8),
-        (0.6, 0.9),
-        (0.7, 0.7),
-        (0.7, 0.8),
-        (0.7, 0.9),
-    ]
-    for prb_t, headroom in macro_configs:
-        policies.append({
-            "name": f"macro_aware_prb{prb_t}_head{headroom}",
-            "fn":   make_macro_aware_policy(
-                        prb_threshold=prb_t, macro_headroom=headroom),
-        })
+    micro_prbs = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7]
+    macro_headrooms = [0.6, 0.7, 0.8]
+    for prb_t in micro_prbs:
+        for headroom in macro_headrooms:
+            policies.append({
+                "name": f"macro_aware_prb{prb_t}_head{headroom}",
+                "fn":   make_macro_aware_policy(
+                            prb_threshold=prb_t, macro_headroom=headroom),
+            })
 
-    # Distance-weighted
-    distance_configs = [
-        (0.3, 0.9), 
-        (0.4, 0.9),   
-        (0.3, 0.8),
-        (0.4, 0.8),  
-        (0.3, 0.7),   
-        (0.4, 0.7),  
-    ]
-    for prb_t, max_d in distance_configs:
-        policies.append({
-            "name": f"distance_prb{prb_t}_dist{max_d}",
-            "fn":   make_distance_policy(
-                        prb_threshold=prb_t, max_distance=max_d),
-        })
+    max_distances = [0.7, 0.8, 0.9]
+    for prb_t in micro_prbs:
+        for max_d in max_distances:
+            policies.append({
+                "name": f"distance_prb{prb_t}_dist{max_d}",
+                "fn":   make_distance_policy(
+                            prb_threshold=prb_t, max_distance=max_d),
+            })
+
     return policies
 
 # CQL
