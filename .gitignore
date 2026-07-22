@@ -5,3 +5,4 @@ d3rlpy_logs/
 logs/
 models/
 *.png
+dataset/offline_dataset.h5

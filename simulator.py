@@ -98,8 +98,8 @@ class RANEnv(gym.Env):
 
     def __init__(
         self,
-        prb_csv:   str = "Datasets/Base/processed_cell_PRB.csv",
-        mr_csv:    str = "Datasets/Base/processed_cell_MR.csv",
+        prb_csv:   str = "Datasets/Base/simulator_ready_traffic_PRB.csv",
+        mr_csv:    str = "Datasets/Base/simulator_ready_traffic_MR.csv",
         cells_csv: str = "Datasets/Opencellid/final_topology.csv",
         config_path: str = "network_config.json",
         start:     int = 0,

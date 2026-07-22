@@ -34,7 +34,6 @@ TRAIN_END   = 663
 EVAL_START  = 664
 EVAL_END    = 829
 
-
 # Episode runner 
 def run_episode(env: RANEnv, policy_fn, policy_name: str) -> pd.DataFrame:
     """
@@ -84,7 +83,6 @@ def print_summary(df: pd.DataFrame, policy_name: str, split: str):
     print(f"  Mean  actual power (W) : {df['actual_power_W'].mean():.4f}")
     print(f"  Mean  baseline (W)     : {df['baseline_power_W'].mean():.4f}")
     print(f"{'='*50}\n")
-
 
 # Main
 def main():
@@ -144,14 +142,14 @@ def main():
 
     # Build env 
     env = RANEnv(
-        prb_csv="Datasets/Base/processed_cell_PRB.csv",
-        mr_csv="Datasets/Base/processed_cell_MR.csv",
+        prb_csv="Datasets/Base/simulator_ready_traffic_PRB.csv",
+        mr_csv="Datasets/Base/simulator_ready_traffic_MR.csv",
         start=start,
         end=end,
         is_continuous_proxy=(args.policy == "iql"),
     )
 
-    # ── Run 
+    #  Run 
     print(f"\nRunning {args.policy} on {args.split} split "
           f"(timesteps {start}–{end})...")
 
@@ -166,7 +164,6 @@ def main():
         dataset_path = f"results/offline_dataset_{args.policy}.csv"
         df.to_csv(dataset_path, index=False)
         print(f"Offline dataset saved → {dataset_path}")
-
 
 if __name__ == "__main__":
     main()

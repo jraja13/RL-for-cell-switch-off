@@ -40,8 +40,8 @@ def main():
 
     # Build training environment
     env = CellWiseDQNEnv(
-        prb_csv="Datasets/Base/processed_cell_PRB.csv",
-        mr_csv="Datasets/Base/processed_cell_MR.csv",
+        prb_csv="Datasets/Base/simulator_ready_traffic_PRB.csv",
+        mr_csv="Datasets/Base/simulator_ready_traffic_MR.csv",
         start=TRAIN_START,
         end=TRAIN_END,
     )
