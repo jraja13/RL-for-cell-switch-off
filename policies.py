@@ -135,7 +135,7 @@ def get_all_behaviour_policies() -> list:
     
     from itertools import product
 
-    thresh_values = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7]
+    thresh_values = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
     dual_configs = [
         (prb_t, mr_t)
         for prb_t, mr_t in product(thresh_values, repeat=2)
@@ -149,7 +149,7 @@ def get_all_behaviour_policies() -> list:
                         prb_threshold=prb_t, mr_threshold=mr_t),
         })
 
-    micro_prbs = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7]
+    micro_prbs = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
     macro_headrooms = [0.6, 0.7, 0.8]
     for prb_t in micro_prbs:
         for headroom in macro_headrooms:

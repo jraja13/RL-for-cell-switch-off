@@ -80,8 +80,22 @@ def print_summary(df: pd.DataFrame, policy_name: str, split: str):
     print(f"  Mean  reward (W)       : {df['reward_W'].mean():.4f}")
     print(f"  Mean  cells off        : {df['n_cells_off'].mean():.2f} / 39")
     print(f"  Mean  blocked (cap)    : {df['n_blocked_by_capacity'].mean():.2f}")
+    print(f"  Mean  blocked (PRB)    : {df['n_blocked_by_micro_threshold'].mean():.2f}")
     print(f"  Mean  actual power (W) : {df['actual_power_W'].mean():.4f}")
     print(f"  Mean  baseline (W)     : {df['baseline_power_W'].mean():.4f}")
+    print(f"  --- Scheme 1 (micros only, macros ignored) ---")
+    print(f"  Mean  micro power (W)   : {df['actual_power_micro_only_W'].mean():.4f}")
+    print(f"  Mean  micro baseline (W): {df['baseline_power_micro_only_W'].mean():.4f}")
+    micro_base = df['baseline_power_micro_only_W'].mean()
+    micro_act  = df['actual_power_micro_only_W'].mean()
+    micro_saving = (1 - micro_act / micro_base) * 100 if micro_base > 0 else 0.0
+    print(f"  Micro saving vs base (%) : {micro_saving:.2f}%")
+    print(f"  --- Scheme 2 (macros frozen, no handoff cost) ---")
+    macro_const_act = df['actual_power_macro_const_W'].mean()
+    base = df['baseline_power_W'].mean()
+    macro_const_saving = (1 - macro_const_act / base) * 100 if base > 0 else 0.0
+    print(f"  Mean  power (macros frozen) (W) : {macro_const_act:.4f}")
+    print(f"  Saving vs full baseline (%)     : {macro_const_saving:.2f}%")
     print(f"{'='*50}\n")
 
 # Main
@@ -104,7 +118,7 @@ def main():
     parser.add_argument(
         "--threshold",
         type=float,
-        default=0.3,
+        default=0.1,
         help="PRB threshold for threshold policy"
     )
     args = parser.parse_args()

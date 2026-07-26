@@ -71,7 +71,7 @@ POWER_PARAMS = {
 SECTOR_COUNT = {"macro": 3, "micro": 1}
 SECTOR_SCALE = SECTOR_COUNT["micro"] / SECTOR_COUNT["macro"] 
 
-MICRO_CSO_LIMIT    = 0.5  # max PRB load at which a micro is eligible for switch-off
+MICRO_CSO_LIMIT    = 0.3  # max PRB load at which a micro is eligible for switch-off
 MACRO_CAPACITY_LIMIT = 0.8 # max PRB load at which a macro is eligible to accept transferred load
 
 def auer_power(load: float, cell_type: str, is_on: bool = True) -> float:
@@ -262,12 +262,17 @@ class RANEnv(gym.Env):
             for i in range(self.n_cells)
         )
 
+        # Scheme 1 baseline: all micros ON, macros ignored entirely.
+        baseline_power_micro_only = sum(
+            auer_power(float(prb[i]), "micro", is_on=True)
+            for i in self.micro_indices
+        )
+
         final_action     = requested_action.copy()
         per_cell_rewards = np.zeros(self.n_micro, dtype=np.float32)
         macro_running_extra = np.zeros(self.n_cells, dtype=np.float32)   # committed transfers so far
         n_blocked = 0   # blocked by macro capacity 
         n_blocked_by_micro_threshold = 0  # blocked by MICRO_CSO_LIMIT
-
 
         for j, micro_idx in enumerate(self.micro_indices):
             macro_idx       = self.micro_to_macro_idx[j]
@@ -315,25 +320,35 @@ class RANEnv(gym.Env):
 
         # Actual power: apply final_action, compute true total
         actual_power = 0.0
+        actual_power_micro_only = 0.0   # Scheme 1: micro power only, macros ignored
+        actual_power_macro_const = 0.0   # Scheme 2: macros frozen at baseline, no handoff cost
+
         for i, cell_type in enumerate(self.cell_types):
             if cell_type == "macro":
                 total_load = float(prb[i]) + float(macro_running_extra[i])
                 total_load = min(total_load, 1.0)
                 actual_power += auer_power(total_load, "macro", is_on=True)
+                actual_power_macro_const += auer_power(float(prb[i]), "macro", is_on=True)
             else:
                 j = self.micro_pos[i]
                 is_on = bool(final_action[j] == 1)
-                actual_power += auer_power(float(prb[i]), "micro", is_on=is_on)
+                micro_p = auer_power(float(prb[i]), "micro", is_on=is_on)
+                actual_power += micro_p
+                actual_power_micro_only += micro_p
+                actual_power_macro_const += micro_p  
 
         return {
             "final_action":      final_action,
             "per_cell_rewards":  per_cell_rewards,
             "n_blocked":         n_blocked,
-            "n_blocked_by_micro_threshold": n_blocked_by_micro_threshold, 
+            "n_blocked_by_micro_threshold": n_blocked_by_micro_threshold,
             "baseline_power_W":  float(baseline_power),
             "actual_power_W":    float(actual_power),
+            "baseline_power_micro_only_W": float(baseline_power_micro_only),
+            "actual_power_micro_only_W":   float(actual_power_micro_only),
+            "actual_power_macro_const_W":  float(actual_power_macro_const), 
         }
-
+    
     # openai/gym API
     def reset(self, *, seed=None, options=None):
         self.t = 0
@@ -374,6 +389,9 @@ class RANEnv(gym.Env):
             "timestep":          self.t,
             "baseline_power_W":  round(result["baseline_power_W"], 4),
             "actual_power_W":    round(result["actual_power_W"],   4),
+            "baseline_power_micro_only_W": round(result["baseline_power_micro_only_W"], 4),
+            "actual_power_micro_only_W":   round(result["actual_power_micro_only_W"],   4),
+            "actual_power_macro_const_W": round(result["actual_power_macro_const_W"], 4),
             "reward_W":          round(reward, 4),
             "n_cells_off":       int(np.sum(final_action == 0)),
             "n_blocked_by_capacity": result["n_blocked"],
