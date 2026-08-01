@@ -150,6 +150,71 @@ def plot_cumulative_power():
         else:
             print(f"{label:<25} {total:>20,.2f} {'—':>15}")
 
+def plot_scheme_comparison():
+    """
+    Grouped bar chart: % energy saved vs baseline, per policy, per scheme.
+        Scheme 1 — Full model (macro compensation cost included)
+        Scheme 2 — Micro-only savings (macros ignored entirely)
+        Scheme 3 — Macros frozen at baseline load (no handoff cost)
+    """
+    labels = []
+    scheme1, scheme2, scheme3 = [], [], []
+
+    for p in POLICIES:
+        path = os.path.join(RESULTS_DIR, p["file"])
+        if not os.path.exists(path):
+            continue
+
+        df = pd.read_csv(path)
+
+        base_full   = df["baseline_power_W"].mean()
+        actual_full = df["actual_power_W"].mean()
+        s1 = (1 - actual_full / base_full) * 100 if base_full > 0 else 0.0
+
+        base_micro   = df["baseline_power_micro_only_W"].mean()
+        actual_micro = df["actual_power_micro_only_W"].mean()
+        s2 = (1 - actual_micro / base_micro) * 100 if base_micro > 0 else 0.0
+
+        actual_macro_const = df["actual_power_macro_const_W"].mean()
+        s3 = (1 - actual_macro_const / base_full) * 100 if base_full > 0 else 0.0
+
+        labels.append(p["label"])
+        scheme1.append(s1)
+        scheme2.append(s2)
+        scheme3.append(s3)
+
+    x = np.arange(len(labels))
+    width = 0.25
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.bar(x - width, scheme1, width, label="Scheme 1: Full model (w/ macro cost)", color="#3498db")
+    ax.bar(x,          scheme2, width, label="Scheme 2: Micro-only", color="#2ecc71")
+    ax.bar(x + width,  scheme3, width, label="Scheme 3: Macros frozen (no handoff cost)", color="#e74c3c")
+
+    ax.set_xlabel("Policy", fontsize=13)
+    ax.set_ylabel("Energy Saved vs Baseline (%)", fontsize=13)
+    ax.set_title(
+        "Energy Savings by Power Accounting Scheme — Evaluation Week",
+        fontsize=14, fontweight="bold",
+    )
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=15)
+    ax.legend(fontsize=10)
+    ax.grid(True, axis="y", alpha=0.3, linestyle="--")
+    ax.axhline(0, color="black", linewidth=0.8)
+
+    plt.tight_layout()
+    out_path = os.path.join(RESULTS_DIR, "scheme_comparison.png")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.show()
+    print(f"Scheme comparison plot saved → {out_path}")
+
+    # Print table
+    print(f"\n{'Policy':<25} {'Scheme 1 (%)':>14} {'Scheme 2 (%)':>14} {'Scheme 3 (%)':>14}")
+    print("-" * 69)
+    for label, s1, s2, s3 in zip(labels, scheme1, scheme2, scheme3):
+        print(f"{label:<25} {s1:>13.1f}% {s2:>13.1f}% {s3:>13.1f}%")
 
 if __name__ == "__main__":
     plot_cumulative_power()
+    plot_scheme_comparison()

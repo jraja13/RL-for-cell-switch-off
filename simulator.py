@@ -61,10 +61,16 @@ import pandas as pd
 import gymnasium as gym
 from gymnasium import spaces
 
-# Auer et al power model 
+# # Auer et al power model 
+# POWER_PARAMS = {
+#     "macro": {"n_trx": 6, "p_max": 20.0, "p0": 130.0, "delta_p": 4.7, "p_sleep": 75.0},
+#     "micro": {"n_trx": 2, "p_max": 6.3,  "p0": 56.0,  "delta_p": 2.6, "p_sleep": 39.0},
+# }
+
+# different vendor's power model
 POWER_PARAMS = {
-    "macro": {"n_trx": 6, "p_max": 20.0, "p0": 130.0, "delta_p": 4.7, "p_sleep": 75.0},
-    "micro": {"n_trx": 2, "p_max": 6.3,  "p0": 56.0,  "delta_p": 2.6, "p_sleep": 39.0},
+    "macro": {"n_trx": 1, "p_max": 379.0, "p0": 365.8, "delta_p": 13.2, "p_sleep": 379.0},
+    "micro": {"n_trx": 1, "p_max": 172.0, "p0": 164.2, "delta_p": 7.63, "p_sleep": 8.0},
 }
 
 # Sector counts 
