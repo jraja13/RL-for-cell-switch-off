@@ -16,6 +16,7 @@ Looks for these files in results/ (eval split):
     cql_eval.csv        ← skipped if not found
     iql_eval.csv        ← skipped if not found
     dqn_eval.csv        ← skipped if not found
+    cqr_eval.csv        ← skipped if not found
 
 Output:
     results/cumulative_power.png
@@ -67,6 +68,13 @@ POLICIES = [
         "label":   "IQL",
         "color":   "#9b59b6",
         "ls":      "-.",
+        "required": False,
+    },
+    {
+        "file":    "cqr_eval.csv",
+        "label":   "CQR",
+        "color":   "#1abc9c",
+        "ls":      ":",
         "required": False,
     },
 ]
@@ -215,6 +223,64 @@ def plot_scheme_comparison():
     for label, s1, s2, s3 in zip(labels, scheme1, scheme2, scheme3):
         print(f"{label:<25} {s1:>13.1f}% {s2:>13.1f}% {s3:>13.1f}%")
 
+import ast
+def print_qos_comparison():
+    """
+    Prints a single combined QoS comparison table across all available
+    policies: energy saved, blocking, overload, and flip-flop stability.
+    Reads directly from the saved eval CSVs — no simulator re-run needed.
+    """
+    rows = []
+
+    for p in POLICIES:
+        path = os.path.join(RESULTS_DIR, p["file"])
+        if not os.path.exists(path):
+            continue
+
+        df = pd.read_csv(path)
+
+        # Energy saved (Scheme 1, full model) — sum-based, matches main.py
+        total_actual = df["actual_power_W"].sum()
+        total_base   = df["baseline_power_W"].sum()
+        energy_saved = (1 - total_actual / total_base) * 100 if total_base > 0 else 0.0
+
+        # Blocking
+        blocked_cap = df["n_blocked_by_capacity"].mean()
+        blocked_prb = df["n_blocked_by_micro_threshold"].mean()
+
+        # Overload
+        overload_pct = (df["n_macro_overload"] > 0).mean() * 100
+
+        # Flip-flops (3-step ping-pong), parsed from stringified action lists
+        actions = np.array(df["action"].apply(ast.literal_eval).tolist())   # (T, 39)
+        flip_flop_events = (actions[:-2] == actions[2:]) & (actions[:-2] != actions[1:-1])
+        flip_flops_per_cell = flip_flop_events.sum(axis=0)
+        total_flip_flops = int(flip_flops_per_cell.sum())
+        pct_cells_flip_flopped = (flip_flops_per_cell > 0).mean() * 100
+
+        rows.append({
+            "Policy":       p["label"],
+            "Energy (%)":   energy_saved,
+            "Blocked(Cap)": blocked_cap,
+            "Blocked(PRB)": blocked_prb,
+            "Overload(%)":  overload_pct,
+            "FlipFlops":    total_flip_flops,
+            "Cells FF(%)":  pct_cells_flip_flopped,
+        })
+
+    # Print table
+    print(f"\n{'='*100}")
+    print("QoS COMPARISON — Blocking, Overload, and Switching Stability")
+    print(f"{'='*100}")
+    header = f"{'Policy':<25}{'Energy(%)':>11}{'Block(Cap)':>12}{'Block(PRB)':>12}{'Overload(%)':>13}{'FlipFlops':>11}{'CellsFF(%)':>12}"
+    print(header)
+    print("-" * 100)
+    for r in rows:
+        print(f"{r['Policy']:<25}{r['Energy (%)']:>10.1f}%{r['Blocked(Cap)']:>12.2f}{r['Blocked(PRB)']:>12.2f}"
+              f"{r['Overload(%)']:>12.1f}%{r['FlipFlops']:>11}{r['Cells FF(%)']:>11.1f}%")
+    print(f"{'='*100}\n")        
+
 if __name__ == "__main__":
     plot_cumulative_power()
     plot_scheme_comparison()
+    print_qos_comparison()

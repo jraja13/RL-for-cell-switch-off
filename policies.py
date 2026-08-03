@@ -253,3 +253,29 @@ def load_dqn_policy(model_path: str = "models/dqn_policy.zip"):
 
     except Exception as e:
         raise RuntimeError(f"Could not load DQN policy: {e}")
+
+def load_cqr_policy(model_path: str = "models/cqr_policy"):
+    """
+    Loads a trained per-cell CQR policy from disk (d3rlpy saved directory).
+    Returns a policy_fn compatible with run_episode().
+    """
+    try:
+        import d3rlpy
+        policy = d3rlpy.load_learnable(model_path)
+        N_FEATURES_PER_CELL = 7
+
+        def cqr_policy(obs: np.ndarray, env) -> np.ndarray:
+            action = np.zeros(env.n_micro, dtype=np.int32)
+            for j, micro_idx in enumerate(env.micro_indices):
+                start_idx = micro_idx * N_FEATURES_PER_CELL
+                end_idx   = start_idx + N_FEATURES_PER_CELL
+                cell_obs  = obs[start_idx:end_idx].astype(np.float32).reshape(1, -1)
+                cell_action = policy.predict(cell_obs)[0]
+                action[j]   = int(cell_action)
+            return action
+
+        print(f"CQR policy loaded from {model_path}")
+        return cqr_policy
+
+    except Exception as e:
+        raise RuntimeError(f"Could not load CQR policy: {e}")    

@@ -79,6 +79,7 @@ SECTOR_SCALE = SECTOR_COUNT["micro"] / SECTOR_COUNT["macro"]
 
 MICRO_CSO_LIMIT    = 0.3  # max PRB load at which a micro is eligible for switch-off
 MACRO_CAPACITY_LIMIT = 0.8 # max PRB load at which a macro is eligible to accept transferred load
+MACRO_OVERLOAD_THRESHOLD = 0.75  
 
 def auer_power(load: float, cell_type: str, is_on: bool = True) -> float:
     """
@@ -328,11 +329,14 @@ class RANEnv(gym.Env):
         actual_power = 0.0
         actual_power_micro_only = 0.0   # Scheme 1: micro power only, macros ignored
         actual_power_macro_const = 0.0   # Scheme 2: macros frozen at baseline, no handoff cost
+        n_macro_overload = 0   # NEW
 
         for i, cell_type in enumerate(self.cell_types):
             if cell_type == "macro":
                 total_load = float(prb[i]) + float(macro_running_extra[i])
                 total_load = min(total_load, 1.0)
+                if total_load > MACRO_OVERLOAD_THRESHOLD:   # NEW
+                    n_macro_overload += 1                    # NEW
                 actual_power += auer_power(total_load, "macro", is_on=True)
                 actual_power_macro_const += auer_power(float(prb[i]), "macro", is_on=True)
             else:
@@ -348,6 +352,7 @@ class RANEnv(gym.Env):
             "per_cell_rewards":  per_cell_rewards,
             "n_blocked":         n_blocked,
             "n_blocked_by_micro_threshold": n_blocked_by_micro_threshold,
+            "n_macro_overload":  n_macro_overload,   # NEW
             "baseline_power_W":  float(baseline_power),
             "actual_power_W":    float(actual_power),
             "baseline_power_micro_only_W": float(baseline_power_micro_only),
@@ -402,6 +407,7 @@ class RANEnv(gym.Env):
             "n_cells_off":       int(np.sum(final_action == 0)),
             "n_blocked_by_capacity": result["n_blocked"],
             "n_blocked_by_micro_threshold": result["n_blocked_by_micro_threshold"],
+            "n_macro_overload":  result["n_macro_overload"], 
             "action":            final_action.tolist(),
             "per_cell_rewards":  result["per_cell_rewards"].tolist(),
         }

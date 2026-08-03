@@ -81,21 +81,48 @@ def print_summary(df: pd.DataFrame, policy_name: str, split: str):
     print(f"  Mean  cells off        : {df['n_cells_off'].mean():.2f} / 39")
     print(f"  Mean  blocked (cap)    : {df['n_blocked_by_capacity'].mean():.2f}")
     print(f"  Mean  blocked (PRB)    : {df['n_blocked_by_micro_threshold'].mean():.2f}")
+    overload_fraction = (df['n_macro_overload'] > 0).mean() * 100   # fraction of timesteps -> mean is correct
+    print(f"  Overload timestep (%)  : {overload_fraction:.2f}%")
+
+    # Switching oscillation ("flip-flopping") — genuine ping-pong within 3 timesteps
+    actions = np.array(df['action'].tolist())   # (T, 39)
+    # A flip-flop = state at t equals state at t-2, but differs from state at t-1
+    # i.e. X -> Y -> X pattern (Y != X), caught within a 3-step sliding window
+    flip_flop_events = (actions[:-2] == actions[2:]) & (actions[:-2] != actions[1:-1])
+    # shape (T-2, 39) boolean — True wherever a flip-flop centred on t-1 occurred
+    flip_flops_per_cell = flip_flop_events.sum(axis=0)          # (39,)
+    total_flip_flops = int(flip_flops_per_cell.sum())
+    mean_flip_flops_per_cell = flip_flops_per_cell.mean()
+    pct_cells_flip_flopped = (flip_flops_per_cell > 0).mean() * 100
+    print(f"  Flip-flop events (3-step) : {total_flip_flops}")
+    print(f"  Mean flip-flops / cell    : {mean_flip_flops_per_cell:.2f}")
+    print(f"  Cells that flip-flopped   : {pct_cells_flip_flopped:.1f}%")
+
     print(f"  Mean  actual power (W) : {df['actual_power_W'].mean():.4f}")
     print(f"  Mean  baseline (W)     : {df['baseline_power_W'].mean():.4f}")
-    print(f"  --- Scheme 1 (micros only, macros ignored) ---")
-    print(f"  Mean  micro power (W)   : {df['actual_power_micro_only_W'].mean():.4f}")
-    print(f"  Mean  micro baseline (W): {df['baseline_power_micro_only_W'].mean():.4f}")
-    micro_base = df['baseline_power_micro_only_W'].mean()
-    micro_act  = df['actual_power_micro_only_W'].mean()
-    micro_saving = (1 - micro_act / micro_base) * 100 if micro_base > 0 else 0.0
+
+    # Full model saving — total energy over the week, so sum not mean
+    total_actual  = df['actual_power_W'].sum()
+    total_base    = df['baseline_power_W'].sum()
+    full_saving = (1 - total_actual / total_base) * 100 if total_base > 0 else 0.0
+    print(f"  Total actual energy (W·steps)   : {total_actual:.2f}")
+    print(f"  Total baseline energy (W·steps) : {total_base:.2f}")
+    print(f"  Full model saving (%)  : {full_saving:.2f}%   <-- Scheme 1 (headline)")
+
+    print(f"  --- Scheme 2 (micros only, macros ignored) ---")
+    micro_base_total = df['baseline_power_micro_only_W'].sum()
+    micro_act_total  = df['actual_power_micro_only_W'].sum()
+    micro_saving = (1 - micro_act_total / micro_base_total) * 100 if micro_base_total > 0 else 0.0
+    print(f"  Total micro power (W·steps)   : {micro_act_total:.2f}")
+    print(f"  Total micro baseline (W·steps): {micro_base_total:.2f}")
     print(f"  Micro saving vs base (%) : {micro_saving:.2f}%")
-    print(f"  --- Scheme 2 (macros frozen, no handoff cost) ---")
-    macro_const_act = df['actual_power_macro_const_W'].mean()
-    base = df['baseline_power_W'].mean()
-    macro_const_saving = (1 - macro_const_act / base) * 100 if base > 0 else 0.0
-    print(f"  Mean  power (macros frozen) (W) : {macro_const_act:.4f}")
-    print(f"  Saving vs full baseline (%)     : {macro_const_saving:.2f}%")
+
+    print(f"  --- Scheme 3 (macros frozen, no handoff cost) ---")
+    macro_const_total = df['actual_power_macro_const_W'].sum()
+    base_total = df['baseline_power_W'].sum()
+    macro_const_saving = (1 - macro_const_total / base_total) * 100 if base_total > 0 else 0.0
+    print(f"  Total power (macros frozen) (W·steps) : {macro_const_total:.2f}")
+    print(f"  Saving vs full baseline (%)           : {macro_const_saving:.2f}%")
     print(f"{'='*50}\n")
 
 # Main
@@ -105,7 +132,7 @@ def main():
         "--policy",
         type=str,
         required=True,
-        choices=["always_on", "threshold", "random", "cql", "iql", "dqn"],
+        choices=["always_on", "threshold", "random", "cql", "iql", "dqn", "cqr"],
         help="Policy to run"
     )
     parser.add_argument(
@@ -153,6 +180,10 @@ def main():
     elif args.policy == "dqn":
         from policies import load_dqn_policy
         policy_fn = load_dqn_policy()
+
+    elif args.policy == "cqr":
+        from policies import load_cqr_policy
+        policy_fn = load_cqr_policy()    
 
     # Build env 
     env = RANEnv(
