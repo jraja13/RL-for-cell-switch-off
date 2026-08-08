@@ -26,7 +26,7 @@ import d3rlpy
 
 DATASET_PATH = "dataset/offline_dataset.h5"
 MODEL_SAVE_DIR = "models/cql_policy"
-N_STEPS = 200_000   # training steps — match DQN for fair comparison
+N_STEPS = 800_000   # training steps — match DQN for fair comparison
 
 torch.manual_seed(42)
 np.random.seed(42)

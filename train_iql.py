@@ -17,7 +17,7 @@ from d3rlpy.algos import IQLConfig
 
 DATASET_PATH = "dataset/offline_dataset.h5"
 MODEL_SAVE_DIR = "models/iql_policy"
-N_STEPS = 200_000
+N_STEPS = 800_000
 
 # Set determinism
 torch.manual_seed(42)
