@@ -73,6 +73,8 @@ POWER_PARAMS = {
     "micro": {"n_trx": 1, "p_max": 172.0, "p0": 164.2, "delta_p": 7.63, "p_sleep": 8.0},
 }
 
+
+
 # Sector counts 
 SECTOR_COUNT = {"macro": 3, "micro": 1}
 SECTOR_SCALE = SECTOR_COUNT["micro"] / SECTOR_COUNT["macro"] 
@@ -87,7 +89,7 @@ def auer_power(load: float, cell_type: str, is_on: bool = True) -> float:
     P_in = N_TRX * P_sleep                  when cell is OFF (sleep mode)
     """
     p = POWER_PARAMS[cell_type]
-    if not is_on or load <= 0:
+    if not is_on:
         return p["n_trx"] * p["p_sleep"]
     return p["n_trx"] * (p["p0"] + p["delta_p"] * float(load))
 
@@ -347,6 +349,20 @@ class RANEnv(gym.Env):
                 actual_power_micro_only += micro_p
                 actual_power_macro_const += micro_p  
 
+        for i, cell_type in enumerate(self.cell_types):
+            if cell_type == "macro":
+                raw_prb = float(prb[i])
+                extra = float(macro_running_extra[i])
+                total_load_uncapped = raw_prb + extra
+                total_load_capped = min(total_load_uncapped, 1.0)
+                p_base = auer_power(raw_prb, "macro", is_on=True)
+                p_actual = auer_power(total_load_capped, "macro", is_on=True)
+                print(f"  [DEBUG] {self.cell_ids[i]}: raw_prb={raw_prb:.6f} "
+                      f"extra={extra:.6f} total_uncapped={total_load_uncapped:.6f} "
+                      f"total_capped={total_load_capped:.6f} "
+                      f"p_base={p_base:.4f} p_actual={p_actual:.4f} "
+                      f"diff={p_base - p_actual:.4f}")
+                
         return {
             "final_action":      final_action,
             "per_cell_rewards":  per_cell_rewards,

@@ -132,7 +132,7 @@ def main():
         "--policy",
         type=str,
         required=True,
-        choices=["always_on", "threshold", "random", "cql", "iql", "dqn", "cqr"],
+        choices=["always_on", "threshold", "random", "cql", "iql", "dqn", "cqr", "ppo"],
         help="Policy to run"
     )
     parser.add_argument(
@@ -183,7 +183,11 @@ def main():
 
     elif args.policy == "cqr":
         from policies import load_cqr_policy
-        policy_fn = load_cqr_policy()    
+        policy_fn = load_cqr_policy()  
+
+    elif args.policy == "ppo":
+        from policies import load_ppo_policy
+        policy_fn = load_ppo_policy()      
 
     # Build env 
     env = RANEnv(

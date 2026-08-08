@@ -278,4 +278,31 @@ def load_cqr_policy(model_path: str = "models/cqr_policy"):
         return cqr_policy
 
     except Exception as e:
-        raise RuntimeError(f"Could not load CQR policy: {e}")    
+        raise RuntimeError(f"Could not load CQR policy: {e}")  
+
+# PPO
+def load_ppo_policy(model_path: str = "models/ppo_policy.zip"):
+    """
+    Loads a trained per-cell PPO policy from disk (SB3 .zip format).
+    Returns a policy_fn compatible with run_episode().
+    """
+    try:
+        from stable_baselines3 import PPO
+        model = PPO.load(model_path)
+        N_FEATURES_PER_CELL = 7
+
+        def ppo_policy(obs: np.ndarray, env) -> np.ndarray:
+            action = np.zeros(env.n_micro, dtype=np.int32)
+            for j, micro_idx in enumerate(env.micro_indices):
+                start_idx = micro_idx * N_FEATURES_PER_CELL
+                end_idx   = start_idx + N_FEATURES_PER_CELL
+                cell_obs  = obs[start_idx:end_idx].astype(np.float32).reshape(1, -1)
+                cell_action, _ = model.predict(cell_obs, deterministic=True)
+                action[j] = int(cell_action[0])
+            return action
+
+        print(f"PPO policy loaded from {model_path}")
+        return ppo_policy
+
+    except Exception as e:
+        raise RuntimeError(f"Could not load PPO policy: {e}")      
