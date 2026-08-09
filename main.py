@@ -57,7 +57,6 @@ def run_episode(env: RANEnv, policy_fn, policy_name: str) -> pd.DataFrame:
         obs, reward, terminated, truncated, info = env.step(action)
         done = terminated or truncated
         info["policy"]  = policy_name
-        info["action"]  = action.tolist()
         log.append(info)
 
     return pd.DataFrame(log)
@@ -132,7 +131,7 @@ def main():
         "--policy",
         type=str,
         required=True,
-        choices=["always_on", "threshold", "random", "cql", "iql", "dqn", "cqr", "ppo"],
+        choices=["always_on", "threshold", "random", "cql", "iql", "dqn", "cqr"],
         help="Policy to run"
     )
     parser.add_argument(
@@ -184,10 +183,6 @@ def main():
     elif args.policy == "cqr":
         from policies import load_cqr_policy
         policy_fn = load_cqr_policy()  
-
-    elif args.policy == "ppo":
-        from policies import load_ppo_policy
-        policy_fn = load_ppo_policy()      
 
     # Build env 
     env = RANEnv(
