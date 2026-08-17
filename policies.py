@@ -254,9 +254,9 @@ def load_dqn_policy(model_path: str = "models/dqn_policy.zip"):
     except Exception as e:
         raise RuntimeError(f"Could not load DQN policy: {e}")
 
-def load_cqr_policy(model_path: str = "models/cqr_policy"):
+def load_qr_cql_policy(model_path: str = "models/qr_cql_policy"):
     """
-    Loads a trained per-cell CQR policy from disk (d3rlpy saved directory).
+    Loads a trained per-cell QR-CQL policy from disk (d3rlpy saved directory).
     Returns a policy_fn compatible with run_episode().
     """
     try:
@@ -264,7 +264,7 @@ def load_cqr_policy(model_path: str = "models/cqr_policy"):
         policy = d3rlpy.load_learnable(model_path)
         N_FEATURES_PER_CELL = 7
 
-        def cqr_policy(obs: np.ndarray, env) -> np.ndarray:
+        def qr_cql_policy(obs: np.ndarray, env) -> np.ndarray:
             action = np.zeros(env.n_micro, dtype=np.int32)
             for j, micro_idx in enumerate(env.micro_indices):
                 start_idx = micro_idx * N_FEATURES_PER_CELL
@@ -274,8 +274,8 @@ def load_cqr_policy(model_path: str = "models/cqr_policy"):
                 action[j]   = int(cell_action)
             return action
 
-        print(f"CQR policy loaded from {model_path}")
-        return cqr_policy
+        print(f"QR-CQL policy loaded from {model_path}")
+        return qr_cql_policy
 
     except Exception as e:
-        raise RuntimeError(f"Could not load CQR policy: {e}")     
+        raise RuntimeError(f"Could not load QR-CQL policy: {e}")     

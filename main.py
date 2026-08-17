@@ -8,6 +8,7 @@ Usage:
     python main.py --policy cql        (after training)
     python main.py --policy iql        (after training)
     python main.py --policy dqn        (after training)
+    python main.py --policy qr_cql      (after training)
 
 Timestep split:
     Training slice   : 0   → 663  (4 weeks, used to generate offline dataset)
@@ -131,7 +132,7 @@ def main():
         "--policy",
         type=str,
         required=True,
-        choices=["always_on", "threshold", "random", "cql", "iql", "dqn", "cqr"],
+        choices=["always_on", "threshold", "random", "cql", "iql", "dqn", "qr_cql"],
         help="Policy to run"
     )
     parser.add_argument(
@@ -178,11 +179,11 @@ def main():
 
     elif args.policy == "dqn":
         from policies import load_dqn_policy
-        policy_fn = load_dqn_policy()
+        policy_fn = load_dqn_policy("models/dqn_final.zip")
 
-    elif args.policy == "cqr":
-        from policies import load_cqr_policy
-        policy_fn = load_cqr_policy()  
+    elif args.policy == "qr_cql":
+        from policies import load_qr_cql_policy
+        policy_fn = load_qr_cql_policy("models/qr_cql_policy")  
 
     # Build env 
     env = RANEnv(

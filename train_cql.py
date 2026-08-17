@@ -76,7 +76,9 @@ def main():
         dataset,
         n_steps=N_STEPS,
         n_steps_per_epoch=10_000,
-        evaluators={},   # no online evaluation — offline only
+        save_interval=10,
+        evaluators={},
+        experiment_name="CQL_run",      # no online evaluation — offline only
     )
 
     # Save

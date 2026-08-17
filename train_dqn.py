@@ -22,11 +22,11 @@ from simulator import RANEnv
 
 TRAIN_START = 0
 TRAIN_END = 663                      # inclusive → env.T = 664 timesteps per pass
-TOTAL_DECISIONS = 800_000           
-MODEL_SAVE_PATH = "models/dqn_policy.zip"
+TOTAL_DECISIONS = 400_000           
+MODEL_SAVE_PATH = "models/dqn_final.zip"
 
 # DQN hyperparameters (unchanged from original)
-LEARNING_RATE = 1e-3
+LEARNING_RATE = 1e-4
 BUFFER_SIZE = 50_000
 LEARNING_STARTS = 1_000
 BATCH_SIZE = 64
@@ -35,7 +35,7 @@ TRAIN_FREQ = 4                       # 1 gradient step per 4 collected decisions
 TARGET_UPDATE_INTERVAL = 1_000       # collected decisions between target syncs
 EXPLORATION_INITIAL_EPS = 1.0
 EXPLORATION_FINAL_EPS = 0.05
-EXPLORATION_FRACTION = 0.3          # spend first 30% of training annealing eps
+EXPLORATION_FRACTION = 0.15          # spend first 15% of training annealing eps
 NET_ARCH = [64, 64]
 
 # Per-cell decision is binary: 0 = request OFF, 1 = request ON.
@@ -235,6 +235,12 @@ def main():
                     [collected, f"{eps:.4f}", model.replay_buffer.size(),
                      f"{mean_r:.4f}", f"{pct_off:.2f}", f"{passes:.4f}"]
                 )
+
+        # Periodic checkpoint save — every ~100,000 decisions
+        if collected % 100_000 < n_micro and collected > 0:
+            ckpt_path = f"models/dqn_policy_step{collected}.zip"
+            model.save(ckpt_path)
+            print(f"  [checkpoint] saved -> {ckpt_path}")        
     
     # Save 
     model.save(MODEL_SAVE_PATH)

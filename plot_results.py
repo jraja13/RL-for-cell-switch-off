@@ -16,7 +16,7 @@ Looks for these files in results/ (eval split):
     cql_eval.csv        ← skipped if not found
     iql_eval.csv        ← skipped if not found
     dqn_eval.csv        ← skipped if not found
-    cqr_eval.csv        ← skipped if not found
+    qr_cql_eval.csv        ← skipped if not found
 
 Output:
     results/cumulative_power.png
@@ -71,8 +71,8 @@ POLICIES = [
         "required": False,
     },
     {
-        "file":    "cqr_eval.csv",
-        "label":   "CQR",
+        "file":    "qr_cql_eval.csv",
+        "label":   "QR-CQL",
         "color":   "#1abc9c",
         "ls":      ":",
         "required": False,
