@@ -183,7 +183,7 @@ def main():
 
     elif args.policy == "qr_cql":
         from policies import load_qr_cql_policy
-        policy_fn = load_qr_cql_policy("models/qr_cql_policy")  
+        policy_fn = load_qr_cql_policy("models/qr_cql_policy")  # <-- change this to the correct seed if needed
 
     # Build env 
     env = RANEnv(

@@ -20,10 +20,13 @@ import gymnasium as gym
 from gymnasium import spaces
 from simulator import RANEnv
 
+import sys
+SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 42
+
 TRAIN_START = 0
 TRAIN_END = 663                      # inclusive → env.T = 664 timesteps per pass
-TOTAL_DECISIONS = 400_000           
-MODEL_SAVE_PATH = "models/dqn_final.zip"
+TOTAL_DECISIONS = 250_000           
+MODEL_SAVE_PATH = f"models/dqn_final_{SEED}.zip"
 
 # DQN hyperparameters (unchanged from original)
 LEARNING_RATE = 1e-4
@@ -44,7 +47,6 @@ NET_ARCH = [64, 64]
 N_ACTIONS = 2
 N_FEATURES_PER_CELL = 7
 LOG_EVERY = 5_000                    # decisions between progress prints
-SEED = 42
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)

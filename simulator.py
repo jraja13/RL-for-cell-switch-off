@@ -73,8 +73,6 @@ POWER_PARAMS = {
     "micro": {"n_trx": 1, "p_max": 172.0, "p0": 164.2, "delta_p": 7.63, "p_sleep": 8.0},
 }
 
-
-
 # Sector counts 
 SECTOR_COUNT = {"macro": 3, "micro": 1}
 SECTOR_SCALE = SECTOR_COUNT["micro"] / SECTOR_COUNT["macro"] 

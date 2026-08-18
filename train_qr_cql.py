@@ -19,7 +19,7 @@ Usage:
     python train_qr_cql.py          # then this
 
 Output:
-    models/qr_cql_policy  — saved d3rlpy policy (directory)
+    models/qr_cql_policy_<SEED>  — saved d3rlpy policy (directory)
 """
 
 import os
@@ -29,16 +29,18 @@ import random
 import numpy as np
 import d3rlpy
 
+import sys
+SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 42
+
+torch.manual_seed(SEED)
+np.random.seed(SEED)
+random.seed(SEED)
+d3rlpy.seed(SEED)
+
 DATASET_PATH = "dataset/offline_dataset.h5"
-MODEL_SAVE_DIR = "models/qr_cql_policy"
+MODEL_SAVE_DIR = f"models/qr_cql_policy_{SEED}"
 N_STEPS = 250_000   # match CQL/DQN for fair comparison
 N_QUANTILES = 32     # standard QR-DQN default; matches d3rlpy default
-
-torch.manual_seed(42)
-np.random.seed(42)
-random.seed(42)
-d3rlpy.seed(42)
-
 
 def main():
     os.makedirs("models", exist_ok=True)
@@ -48,7 +50,7 @@ def main():
         import d3rlpy
         from d3rlpy.algos import DiscreteCQLConfig
         from d3rlpy.models import QRQFunctionFactory
-        d3rlpy.seed(42)
+        d3rlpy.seed(SEED)
 
     except ImportError:
         raise ImportError(
