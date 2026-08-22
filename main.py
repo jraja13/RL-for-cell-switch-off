@@ -179,11 +179,11 @@ def main():
 
     elif args.policy == "dqn":
         from policies import load_dqn_policy
-        policy_fn = load_dqn_policy("models/dqn_final.zip")
+        policy_fn = load_dqn_policy("models/dqn_penalty_42.zip")
 
     elif args.policy == "qr_cql":
         from policies import load_qr_cql_policy
-        policy_fn = load_qr_cql_policy("models/qr_cql_policy")  # <-- change this to the correct seed if needed
+        policy_fn = load_qr_cql_policy("models/qr_cql_policy_42")  # <-- change this to the correct seed if needed
 
     # Build env 
     env = RANEnv(

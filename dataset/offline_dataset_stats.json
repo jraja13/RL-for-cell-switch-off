@@ -136,11 +136,11 @@
     3237000,
     1
   ],
-  "reward_mean": 8.71291732788086,
-  "reward_std": 14.678166389465332,
+  "reward_mean": 45.954837799072266,
+  "reward_std": 71.31123352050781,
   "reward_min": 0.0,
-  "reward_max": 34.0,
-  "pct_action_on": 73.94253938832253,
-  "pct_action_off": 26.05746061167748,
+  "reward_max": 157.16876220703125,
+  "pct_action_on": 70.65705900525178,
+  "pct_action_off": 29.342940994748222,
   "seed": 42
 }

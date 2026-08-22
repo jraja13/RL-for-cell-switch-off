@@ -346,6 +346,18 @@ class RANEnv(gym.Env):
                 actual_power += micro_p
                 actual_power_micro_only += micro_p
                 actual_power_macro_const += micro_p  
+
+        # NEW: per-micro overload flag — was this micro's parent macro overloaded
+        # this timestep? Used only for DQN's QoS-penalty reward shaping.
+        overload_per_micro = np.zeros(self.n_micro, dtype=np.float32)
+        macro_overloaded = {}  # macro_idx -> bool, computed once per macro
+        for i in self.macro_indices:
+            total_load = float(prb[i]) + float(macro_running_extra[i])
+            macro_overloaded[i] = total_load > MACRO_OVERLOAD_THRESHOLD
+
+        for j, micro_idx in enumerate(self.micro_indices):
+            macro_idx = self.micro_to_macro_idx[j]
+            overload_per_micro[j] = float(macro_overloaded[macro_idx])
                 
         return {
             "final_action":      final_action,
@@ -358,6 +370,7 @@ class RANEnv(gym.Env):
             "baseline_power_micro_only_W": float(baseline_power_micro_only),
             "actual_power_micro_only_W":   float(actual_power_micro_only),
             "actual_power_macro_const_W":  float(actual_power_macro_const), 
+            "overload_per_micro":  overload_per_micro,   # NEW
         }
     
     # openai/gym API
@@ -410,6 +423,7 @@ class RANEnv(gym.Env):
             "n_macro_overload":  result["n_macro_overload"], 
             "action":            final_action.tolist(),
             "per_cell_rewards":  result["per_cell_rewards"].tolist(),
+            "overload_per_micro": result["overload_per_micro"].tolist(),
         }
 
         self.t += 1

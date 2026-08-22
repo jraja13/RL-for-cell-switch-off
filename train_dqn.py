@@ -26,7 +26,7 @@ SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 42
 TRAIN_START = 0
 TRAIN_END = 663                      # inclusive → env.T = 664 timesteps per pass
 TOTAL_DECISIONS = 250_000           
-MODEL_SAVE_PATH = f"models/dqn_final_{SEED}.zip"
+MODEL_SAVE_PATH = f"models/dqn_penalty_{SEED}.zip"
 
 # DQN hyperparameters (unchanged from original)
 LEARNING_RATE = 1e-4
@@ -40,6 +40,12 @@ EXPLORATION_INITIAL_EPS = 1.0
 EXPLORATION_FINAL_EPS = 0.05
 EXPLORATION_FRACTION = 0.15          # spend first 15% of training annealing eps
 NET_ARCH = [64, 64]
+
+# QoS-penalty reward shaping (DQN-QoS variant only)
+USE_QOS_PENALTY = True   # flip to False to reproduce DQN_final exactly
+P_BLOCKED   = 5.0    # penalty per blocked switch-off attempt
+P_OVERLOAD  = 10.0   # penalty scale for macro overload
+P_FLIPFLOP  = 3.0    # penalty per detected flip-flop
 
 # Per-cell decision is binary: 0 = request OFF, 1 = request ON.
 # (RANEnv's JOINT action space is MultiBinary(39); this constant is the
@@ -134,6 +140,10 @@ def main():
 
     full_obs, _ = env.reset()
 
+    from collections import deque
+    # last 3 on/off states per micro, for flip-flop detection
+    status_history = {j: deque(maxlen=3) for j in range(n_micro)}
+
     print(f"Training DQN for {TOTAL_DECISIONS:,} decisions "
           f"(~{TOTAL_DECISIONS / decisions_per_pass:.1f} passes over "
           f"{decisions_per_pass:,} decisions/pass, {env.T} timesteps x {n_micro} micros)...\n")
@@ -170,6 +180,31 @@ def main():
         next_full_obs, _timestep_reward, terminated, truncated, info = env.step(requested_actions)
         done = bool(terminated or truncated)
         per_cell_rewards = np.asarray(info["per_cell_rewards"], dtype=np.float32)  # (39,)
+
+        if USE_QOS_PENALTY:
+            final_action     = np.asarray(info["action"], dtype=np.int32)
+            overload_per_micro = np.asarray(info["overload_per_micro"], dtype=np.float32)
+            shaped_rewards = per_cell_rewards.copy()
+
+            for j in range(n_micro):
+                # 1. Blocked-attempt penalty: requested OFF (0) but forced ON (1)
+                if requested_actions[j] == 0 and final_action[j] == 1:
+                    shaped_rewards[j] -= P_BLOCKED
+
+                # 2. Overload penalty: committed OFF and parent macro overloaded
+                if final_action[j] == 0 and overload_per_micro[j] == 1.0:
+                    shaped_rewards[j] -= P_OVERLOAD
+
+                # 3. Flip-flop penalty: ON-OFF-ON or OFF-ON-OFF in last 3 steps
+                status_history[j].append(int(final_action[j]))
+                if len(status_history[j]) == 3:
+                    a, b, c = status_history[j]
+                    if a == c and a != b:
+                        shaped_rewards[j] -= P_FLIPFLOP
+
+            per_cell_rewards = shaped_rewards
+
+
 
         #  CORRECTLY-PAIRED transitions into the replay buffer
         for j, micro_idx in enumerate(micro_indices):
