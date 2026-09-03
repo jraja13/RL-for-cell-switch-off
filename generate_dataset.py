@@ -1,30 +1,3 @@
-"""
-Generates an offline dataset for CQL training by rolling out 20
-behaviour policies on the training slice (timesteps 0-663).
-
-Behaviour policies :
-    PRB-only threshold  : (0.05 to 0.50, step 0.05)
-    Dual threshold      :  (PRB + MR conditions)
-    Macro-aware         :  (PRB + macro headroom check)
-    Distance-weighted   :  (PRB + distance to macro)
-
-Total: 20 x 663 timesteps x 39 micros = ~517,140 transitions
-
-Per-cell transition format:
-    obs      : (7,)  float32
-    action   : (1,)  float32 — 0.0 or 1.0
-    reward   : float32       — exact per-cell reward
-    next_obs : (7,)  float32
-    terminal : float32       — 1.0 at episode end, else 0.0
-
-Output:
-    dataset/offline_dataset.h5
-    dataset/offline_dataset_stats.json
-
-Usage:
-    python generate_dataset.py
-"""
-
 import os
 import json
 import numpy as np

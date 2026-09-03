@@ -1,13 +1,3 @@
-"""
-Trains a per-cell DQN policy on the CSO problem with a MANUAL training loop.
-
-Usage:
-    python train_dqn.py
-
-Output:
-    models/dqn_policy.zip  — saved SB3 DQN, picked up by main.py --policy dqn
-"""
-
 import os
 import csv
 import numpy as np

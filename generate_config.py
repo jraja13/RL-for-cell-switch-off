@@ -1,12 +1,3 @@
-"""
-Config Generator: 
-Reads cells.csv and outputs network_config.json
-cells.csv columns: CellID, Latitude, Longitude, Macro
-
-Usage:
-run the command: python generate_config.py
-"""
-
 import json
 import pandas as pd
 

@@ -1,29 +1,3 @@
-"""
-All policies share the same signature:
-
-    action = policy_fn(obs, env)
-
-    obs : np.ndarray (322,)  — current state vector
-    env : RANEnv             — env reference (policies can inspect
-                               env.prb, env.mr, env.t, env.n_micro etc)
-
-    returns: np.ndarray (n_micro,) binary, 1=ON 0=OFF
-
-Rule-based policies:
-    - always_on_policy
-    - random_policy
-    - make_threshold_policy(threshold)
-    - make_dual_threshold_policy(prb_threshold, mr_threshold)
-    - make_macro_aware_policy(prb_threshold, macro_headroom)
-    - make_distance_policy(prb_threshold, max_distance)
-    - get_all_behaviour_policies()  ← returns all policies for dataset generation
-
-RL policies:
-    - load_cql_policy()
-    - load_dqn_policy()
-    - load_iql_policy()
-"""
-
 import numpy as np
 
 # Always-On

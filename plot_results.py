@@ -1,27 +1,3 @@
-"""
-Reads saved result CSVs from the results/ folder and generates
-a cumulative power consumption plot.
-
-Each policy run saves a CSV with at minimum:
-    actual_power_W    — network power consumed at each timestep
-    baseline_power_W  — always-on power at each timestep
-    timestep          — step index
-
-Usage:
-    python plot_results.py
-
-Looks for these files in results/ (eval split):
-    always_on_eval.csv
-    threshold_eval.csv
-    cql_eval.csv        ← skipped if not found
-    iql_eval.csv        ← skipped if not found
-    dqn_eval.csv        ← skipped if not found
-    qr_cql_eval.csv        ← skipped if not found
-
-Output:
-    results/cumulative_power.png
-"""
-
 import os
 import pandas as pd
 import numpy as np

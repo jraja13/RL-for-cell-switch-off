@@ -1,27 +1,3 @@
-"""
-Entry point for all simulation runs.
-
-Usage:
-    python main.py --policy always_on
-    python main.py --policy threshold
-    python main.py --policy random
-    python main.py --policy cql        (after training)
-    python main.py --policy iql        (after training)
-    python main.py --policy dqn        (after training)
-    python main.py --policy qr_cql      (after training)
-
-Timestep split:
-    Training slice   : 0   → 663  (4 weeks, used to generate offline dataset)
-    Evaluation slice : 664 → 829  (1 week, all methods compared here)
-
-For rule-based policies (always_on, threshold, random):
-    Runs on full 830 timesteps but only evaluation slice is used for comparison.
-
-For ML policies (cql, iql, dqn):
-    Training happens separately.
-    This file runs evaluation on the held-out slice only.
-"""
-
 import argparse
 import os
 import json

@@ -122,6 +122,8 @@ python main.py --policy cql --split eval
 python main.py --policy iql --split eval
 python main.py --policy qr_cql --split eval
 
+#Before running  the evaluation, ensure that the correct model is loaded in the elif in the main() function in main.py 
+
 # 4. Aggregate and plot results
 python plot_results.py
 ```
